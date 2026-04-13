@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --color-kinetic-bg: #f4f4f4;
+}
+
+@layer utilities {
+  .border-kinetic {
+    border-width: 3px;
+    border-color: #000;
+    border-style: solid;
+  }
+  .shadow-kinetic {
+    box-shadow: 4px 4px 0 0 #000;
+  }
+  .shadow-kinetic-lg {
+    box-shadow: 8px 8px 0 0 #000;
+  }
+  .shadow-brand {
+    box-shadow: 4px 4px 0 0 #000;
+  }
+  .shadow-brand-lg {
+    box-shadow: 8px 8px 0 0 #000;
+  }
+}
+
+body {
+  background-color: var(--color-kinetic-bg);
+  color: #000;
+}

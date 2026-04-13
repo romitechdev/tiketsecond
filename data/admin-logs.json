@@ -1,0 +1,20 @@
+[
+  {
+    "id": "log-1776005730888-289059376",
+    "createdAt": "2026-04-12T14:55:30.888Z",
+    "action": "create_ticket",
+    "targetType": "ticket",
+    "targetId": "cmnvvygcc000nij5z6kd3un1i",
+    "actorEmail": "muhromin.45@sma.belajar.id",
+    "message": "User muhromin.45@sma.belajar.id membuat tiket KAPAS -> WONOKROMO"
+  },
+  {
+    "id": "log-1776005657460-783330317",
+    "createdAt": "2026-04-12T14:54:17.460Z",
+    "action": "onboarding_complete",
+    "targetType": "user",
+    "targetId": "muhromin.45@sma.belajar.id",
+    "actorEmail": "muhromin.45@sma.belajar.id",
+    "message": "User muhromin.45@sma.belajar.id menyelesaikan onboarding"
+  }
+]
