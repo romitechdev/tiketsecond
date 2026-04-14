@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     template: '%s | TiketSecond',
     default: 'TiketSecond - Jual Beli Tiket Kereta Preloved',
   },
+  verification: {
+    google: 'CC6bjZ45EFPO-vkaeJE8sfjrf5umq-IyAiSuhYUyfpc',
+  },
   description: 'Marketplace tiket kereta terlengkap di Indonesia. Cari, beli, dan jual tiket kereta dengan harga terjangkau, proses cepat, dan transaksi aman.',
   keywords: ['tiket kereta', 'tiket preloved', 'jual tiket kereta', 'marketplace kereta', 'tiket murah', 'sistem otomatis'],
   authors: [{ name: 'TiketSecond Team' }],

@@ -6,8 +6,10 @@ import { LogIn, Mail } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseAuth } from "@/components/SupabaseAuthProvider";
 
+const appBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://tiketsecond.vercel.app";
+
 function getAppBaseUrl() {
-  return process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+  return appBaseUrl;
 }
 
 export default function LoginPage() {

@@ -11,16 +11,23 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const user = (await ensureDbUserFromSupabaseUser(supabaseUser)) ||
-    (await db.user.findUnique({
-      where: { email: supabaseUser.email || "" },
-      select: {
-        name: true,
-        email: true,
-        phone: true,
-        image: true,
-      },
-    }));
+  let user = await db.user.findUnique({
+    where: { email: supabaseUser.email || "" },
+    select: {
+      name: true,
+      email: true,
+      phone: true,
+      image: true,
+    },
+  });
+
+  if (!user) {
+    try {
+      user = await ensureDbUserFromSupabaseUser(supabaseUser);
+    } catch {
+      user = null;
+    }
+  }
 
   if (!user) {
     redirect("/login");
