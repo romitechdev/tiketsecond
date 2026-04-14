@@ -1,14 +1,14 @@
 "use client";
 
-import type { Metadata } from "next";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn, Mail } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseAuth } from "@/components/SupabaseAuthProvider";
 
-// Note: Metadata can't be exported from client components.
-// Export from a layout.ts if needed, or use dynamic import wrapper.
+function getAppBaseUrl() {
+  return process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+}
 
 export default function LoginPage() {
   const { user, loading } = useSupabaseAuth();
@@ -35,7 +35,7 @@ export default function LoginPage() {
       const { error: signInError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${getAppBaseUrl()}/`,
         },
       });
 
@@ -60,7 +60,7 @@ export default function LoginPage() {
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${getAppBaseUrl()}/`,
         },
       });
 

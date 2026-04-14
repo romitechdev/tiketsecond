@@ -20,6 +20,7 @@ DIRECT_URL="postgresql://postgres:YOUR_DB_PASSWORD@db.YOUR_PROJECT_REF.supabase.
 NEXT_PUBLIC_SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_ANON_KEY"
 SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY"
+NEXT_PUBLIC_BASE_URL="https://your-production-domain.com"
 SUPABASE_STORAGE_BUCKET="ticket-assets"
 MAINTENANCE_CRON_SECRET="replace-with-strong-random-secret"
 ACTIVITY_LOG_RETENTION_DAYS="90"
@@ -33,6 +34,7 @@ Catatan:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` dipakai di client dan server auth session refresh.
 - `SUPABASE_SERVICE_ROLE_KEY` hanya untuk server-side privileged operations.
 - `DATABASE_URL` dan `DIRECT_URL` dipakai Prisma untuk akses database Supabase Postgres.
+- `NEXT_PUBLIC_BASE_URL` dipakai untuk redirect auth dan canonical SEO production.
 - `SUPABASE_STORAGE_BUCKET` untuk file upload tiket dan foto profil di Supabase Storage.
 - `MAINTENANCE_CRON_SECRET` untuk proteksi endpoint cleanup terjadwal.
 - `ACTIVITY_LOG_RETENTION_DAYS` durasi retensi log aktivitas.
@@ -81,9 +83,11 @@ npm run prisma:push
 Di dashboard Supabase:
 
 1. Aktifkan provider yang ingin dipakai (Google / Email OTP).
-2. Tambahkan URL callback / redirect aplikasi.
+2. Tambahkan URL callback / redirect aplikasi production, misalnya `https://your-production-domain.com/`.
 3. Untuk local development, pastikan URL berikut terdaftar:
 	- `http://localhost:3000`
+
+Pastikan juga bagian Auth > URL Configuration di Supabase memakai domain production sebagai Site URL, dan whitelist redirect URLs mencakup domain produksi serta localhost untuk dev.
 
 ## Install & Run
 
