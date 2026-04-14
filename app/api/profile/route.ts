@@ -16,6 +16,19 @@ function isValidPhone(phone: string) {
   return /^\+?[0-9]{9,15}$/.test(phone);
 }
 
+function buildFallbackUser(supabaseUser: Awaited<ReturnType<typeof getCurrentUser>>) {
+  return {
+    name:
+      (supabaseUser?.user_metadata?.full_name as string | undefined) ||
+      (supabaseUser?.user_metadata?.name as string | undefined) ||
+      supabaseUser?.email ||
+      "",
+    email: supabaseUser?.email || "",
+    image: (supabaseUser?.user_metadata?.avatar_url as string | undefined) || "",
+    phone: "",
+  };
+}
+
 export async function GET() {
   const supabaseUser = await getCurrentUser();
 
@@ -23,19 +36,46 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = (await ensureDbUserFromSupabaseUser(supabaseUser)) ||
-    (await db.user.findUnique({
-      where: { email: supabaseUser.email || "" },
-      select: {
-        name: true,
-        email: true,
-        image: true,
-        phone: true,
-      },
-    }));
+  let user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    phone: string | null;
+    createdAt: Date;
+  } | null = await ensureDbUserFromSupabaseUser(supabaseUser);
 
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    try {
+      user = await db.user.findUnique({
+        where: { email: supabaseUser.email || "" },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          phone: true,
+          createdAt: true,
+        },
+      });
+    } catch (error) {
+      console.error("GET /api/profile DB lookup failed", error);
+    }
+  }
+
+  if (!user) {
+    const fallbackUser = buildFallbackUser(supabaseUser);
+    if (!fallbackUser.email) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      user: fallbackUser,
+      needsOnboarding: true,
+      isAdmin: isAdminEmail(fallbackUser.email),
+      degraded: true,
+      warning: "Database sedang tidak tersedia, menampilkan data akun dasar.",
+    });
   }
 
   return NextResponse.json({
@@ -73,11 +113,25 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Format nomor telepon tidak valid" }, { status: 400 });
   }
 
-  const user = (await ensureDbUserFromSupabaseUser(supabaseUser)) ||
-    (await db.user.findUnique({
-      where: { email: supabaseUser.email },
-      select: { id: true, image: true },
-    }));
+  const ensuredUser = await ensureDbUserFromSupabaseUser(supabaseUser);
+  let user: { id: string; image: string | null } | null = ensuredUser
+    ? { id: ensuredUser.id, image: ensuredUser.image }
+    : null;
+
+  if (!user) {
+    try {
+      user = await db.user.findUnique({
+        where: { email: supabaseUser.email },
+        select: { id: true, image: true },
+      });
+    } catch (error) {
+      console.error("PATCH /api/profile DB lookup failed", error);
+      return NextResponse.json(
+        { error: "Layanan database sementara tidak tersedia. Coba lagi sebentar." },
+        { status: 503 }
+      );
+    }
+  }
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });

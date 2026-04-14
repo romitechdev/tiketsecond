@@ -11,25 +11,45 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  let user = await db.user.findUnique({
-    where: { email: supabaseUser.email || "" },
-    select: {
-      name: true,
-      email: true,
-      phone: true,
-      image: true,
-    },
-  });
+  let user: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    image: string | null;
+  } | null = null;
 
-  if (!user) {
-    try {
+  try {
+    user = await db.user.findUnique({
+      where: { email: supabaseUser.email || "" },
+      select: {
+        name: true,
+        email: true,
+        phone: true,
+        image: true,
+      },
+    });
+
+    if (!user) {
       user = await ensureDbUserFromSupabaseUser(supabaseUser);
-    } catch {
-      user = null;
     }
+  } catch (error) {
+    console.error("Profile page failed to load DB user", error);
   }
 
-  if (!user) {
+  const fallbackUser = {
+    name:
+      (supabaseUser.user_metadata?.full_name as string | undefined) ||
+      (supabaseUser.user_metadata?.name as string | undefined) ||
+      supabaseUser.email ||
+      null,
+    email: supabaseUser.email || null,
+    phone: null,
+    image: (supabaseUser.user_metadata?.avatar_url as string | undefined) || null,
+  };
+
+  const resolvedUser = user || fallbackUser;
+
+  if (!resolvedUser.email) {
     redirect("/login");
   }
 
@@ -44,10 +64,10 @@ export default async function ProfilePage() {
         </p>
 
         <ProfileForm
-          name={user.name || ""}
-          email={user.email || ""}
-          phone={user.phone || ""}
-          image={user.image || ""}
+          name={resolvedUser.name || ""}
+          email={resolvedUser.email || ""}
+          phone={resolvedUser.phone || ""}
+          image={resolvedUser.image || ""}
         />
       </div>
     </div>
