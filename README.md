@@ -151,3 +151,7 @@ npm run start
 - Public pages (`/`, `/login`) must return `200`.
 - User-protected APIs (`/api/profile`, `/api/tickets/my`) must return `401` when not logged in.
 - Admin APIs (`/api/admin/users`, `/api/admin/logs`) must return `403` when not an admin.
+
+<!-- last-updated -->
+_Last updated: 2026-09-05_
+
